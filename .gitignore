@@ -1,0 +1,10 @@
+# Runtime preferences written next to index.js by the host half.
+.settings.json
+
+# Local dotenv files that hold a Jira token.
+.env
+.env.*
+jira.env
+
+node_modules/
+.DS_Store

@@ -1,0 +1,51 @@
+{
+  "name": "dsh-jira-plugin",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Jira tickets inside DeepSeek Harness: configurable visible spaces, multi-space and status filters, ticket detail, create/transition/comment, right-sidebar tab.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "jira",
+    "atlassian",
+    "sidebar"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Luc",
+    "url": "https://github.com/ioteecs-team"
+  },
+  "homepage": "https://github.com/ioteecs-team/dsh-jira#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ioteecs-team/dsh-jira.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ioteecs-team/dsh-jira/issues"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.0-rc.1 <0.3.0-0"
+  }
+}

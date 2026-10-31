@@ -1,0 +1,32 @@
+# Couche de patch du bundle `dsh-jira-plugin`.
+#
+# Une seule ligne de plugin porte les deux moitiés : la moitié Node
+# (`exports["."]`) sert l'API HTTP `/jira/api/*` et garde le jeton côté hôte ;
+# la moitié navigateur (`exports["./client"]`) est chargée par client-modules
+# depuis `dsh.client` et enregistre l'icône, le panneau principal et l'onglet
+# de la barre latérale droite.
+#
+# Config :
+#   spaces   — espaces (clés de projet Jira) visibles dans la vue, dans cet
+#              ordre. Omis ou vide = tous les projets du jeton.
+#   envFile  — fichier dotenv lisible par l'hôte (défaut
+#              ~/.config/dsh-jira/jira.env). Les clés JIRA_BASE/JIRA_BASE_URL,
+#              JIRA_EMAIL, JIRA_API_TOKEN y sont lues si la config ci-dessous
+#              ne les fournit pas.
+#   baseUrl / email / apiToken — surchargent l'environnement et le fichier.
+#              Préférer le fichier : un jeton écrit ici finit dans un fichier
+#              de configuration lisible.
+#   requireAuth — vrai par défaut : chaque requête passe le garde-fou
+#              Host/Origin + cookie de session du service `connection`, comme
+#              les routes `/api` de DSH. Le mettre à `false` seulement si le
+#              panneau répond « Non authentifié » dans l'application de bureau.
+- insert:
+    - id: jira
+      name: 'dsh-jira-plugin'
+      config:
+        # Clés de projet Jira visibles dans la vue. Omis ou vide = tous les
+        # projets visibles par le jeton.
+        spaces:
+          - ABC
+          - OPS
+        envFile: ~/.config/dsh-jira/jira.env
