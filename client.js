@@ -244,6 +244,17 @@ window.__ModuleLoader__.load({
 .jr-badge[data-tone=progress]{border-color:color-mix(in srgb,var(--jr-accent) 42%,transparent);background:color-mix(in srgb,var(--jr-accent) 14%,transparent);color:var(--jr-accent)}
 .jr-badge[data-tone=new]{border-color:var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary)}
 .jr-tag{flex:none;padding:1px 6px;border-radius:999px;border:1px solid var(--dsw-alias-border-l1);font-size:10px;color:var(--dsw-alias-label-secondary);white-space:nowrap}
+.jr-type{display:inline-flex;flex:none;align-items:center;justify-content:center;line-height:0;color:var(--dsw-alias-label-secondary)}
+.jr-type[data-type=bug]{color:var(--jr-err)}
+.jr-type[data-type=story]{color:var(--jr-ok)}
+.jr-type[data-type=task]{color:var(--jr-accent)}
+.jr-type[data-type=subtask]{color:color-mix(in srgb,var(--jr-accent) 55%,var(--jr-ok))}
+.jr-type[data-type=epic]{color:var(--jr-warn)}
+.jr-type[data-type=feature]{color:color-mix(in srgb,var(--jr-accent) 55%,var(--jr-warn))}
+.jr-type[data-type=idea]{color:var(--jr-warn)}
+.jr-type[data-type=improvement]{color:var(--jr-ok)}
+.jr-type[data-type=spike],.jr-type[data-type=change],.jr-type[data-type=unknown]{color:var(--dsw-alias-label-secondary)}
+.jr-detail-type{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--dsw-alias-label-secondary);white-space:nowrap}
 .jr-avatar{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex:none;border-radius:999px;border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font-size:9px;font-weight:700}
 .jr-when{flex:none;white-space:nowrap;font-variant-numeric:tabular-nums;opacity:.85}
 .jr-detail{display:flex;flex-direction:column;flex:1 1 auto;gap:9px;min-height:0;overflow:auto;padding:12px 18px 22px}
@@ -359,6 +370,93 @@ window.__ModuleLoader__.load({
       if (!parts.length) return '–'
       if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
       return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+    }
+
+    /* Issue type glyphs: the shape carries the type, the colour reinforces it.
+       Names are matched, not indexed, because Jira localizes them per project
+       (`Task` / `Tâche`, `Sub-task` / `Sous-tâche`). */
+
+    const TYPE_PATHS = {
+      bug: [
+        ['circle', { cx: 12, cy: 13, r: 4.3 }],
+        ['path', { d: 'M12 8.7V5.1M12 5.1L9.5 2.6M12 5.1l2.5-2.5M7.7 11.3H4.1M7.7 15.3l-3 2M16.3 11.3h3.6M16.3 15.3l3 2' }],
+      ],
+      story: [['path', { d: 'M7.5 4.5h9v15l-4.5-3.6-4.5 3.6z' }]],
+      task: [
+        ['rect', { x: 4.5, y: 4.5, width: 15, height: 15, rx: 2.5 }],
+        ['path', { d: 'M8.4 12.2l2.4 2.4 4.8-5' }],
+      ],
+      subtask: [
+        ['path', { d: 'M9.6 4.5h9.9v9.9' }],
+        ['path', { d: 'M4.5 9.6h9.9v9.9H4.5z' }],
+        ['path', { d: 'M7.5 14.4l2.1 2.1 4.2-4.4' }],
+      ],
+      epic: [['path', { d: 'M13.4 2.8L4.8 14.3h5.7l-1 6.9 8.7-11.5h-5.7z' }]],
+      feature: [
+        ['path', { d: 'M6 20.5V4' }],
+        ['path', { d: 'M6 4.8h12L15.6 9l2.4 4.2H6z' }],
+      ],
+      idea: [
+        ['path', { d: 'M12 3.6a5.7 5.7 0 00-3.3 10.3c.7.5 1.1 1.3 1.1 2.1h4.4c0-.8.4-1.6 1.1-2.1A5.7 5.7 0 0012 3.6z' }],
+        ['path', { d: 'M9.9 17.6h4.2M10.6 20.4h2.8' }],
+      ],
+      improvement: [
+        ['path', { d: 'M4.8 19.2L19.2 4.8' }],
+        ['path', { d: 'M12.6 4.8h6.6v6.6' }],
+      ],
+      change: [
+        ['path', { d: 'M4.5 8.4h12.2l-3.4-3.4' }],
+        ['path', { d: 'M19.5 15.6H7.3l3.4 3.4' }],
+      ],
+      spike: [['path', { d: 'M12 3.2l2.4 5.6 5.6.7-4.2 4 1.2 5.7-5-3-5 3 1.2-5.7-4.2-4 5.6-.7z' }]],
+      unknown: [
+        ['rect', { x: 4.5, y: 4.5, width: 15, height: 15, rx: 3 }],
+        ['circle', { cx: 12, cy: 12, r: 1.5, fill: 'currentColor', stroke: 'none' }],
+      ],
+    }
+
+    /** Classify a Jira issue type name into one of the glyph families. */
+    function typeKindOf(name) {
+      const value = String(name || '').trim().toLowerCase()
+      if (value === '') return 'unknown'
+      if (/^(sub-?task|sous[- ]?t[âa]che|sous[- ]?tache)$/.test(value)) return 'subtask'
+      if (/^(idea|id[ée]e)$/.test(value)) return 'idea'
+      if (/^(epic|[ée]pop[ée]e)$/.test(value)) return 'epic'
+      if (/^(story|histoire|user story)$/.test(value)) return 'story'
+      if (/^(bug|anomalie|erreur|defect)$/.test(value)) return 'bug'
+      if (/^(task|t[âa]che)$/.test(value)) return 'task'
+      if (/^(feature|fonctionnalit[ée])$/.test(value)) return 'feature'
+      if (/^(improvement|am[ée]lioration)$/.test(value)) return 'improvement'
+      if (/^(change|changement)$/.test(value)) return 'change'
+      if (/^spike$/.test(value)) return 'spike'
+      if (value.includes('sous') && value.includes('t')) return 'subtask'
+      if (value.includes('bug') || value.includes('anomal')) return 'bug'
+      if (value.includes('story') || value.includes('histoire')) return 'story'
+      if (value.includes('epic') || value.includes('pop')) return 'epic'
+      if (value.includes('idea') || value.includes('id[ée]e')) return 'idea'
+      if (value.includes('tâche') || value.includes('tache') || value.includes('task')) return 'task'
+      if (value.includes('feature') || value.includes('fonctionnalit')) return 'feature'
+      return 'unknown'
+    }
+
+    /** One issue type glyph; `title` on the wrapping span names the type. */
+    function TypeIcon({ type, size }) {
+      const kind = typeKindOf(type)
+      const pixels = typeof size === 'number' ? size : 16
+      const glyph = TYPE_PATHS[kind] || TYPE_PATHS.unknown
+      return h('svg', {
+        className: 'jr-type-glyph',
+        width: pixels,
+        height: pixels,
+        viewBox: '0 0 24 24',
+        fill: 'none',
+        stroke: 'currentColor',
+        strokeWidth: 1.6,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+        'aria-hidden': true,
+        focusable: 'false',
+      }, glyph.map(([tag, attributes], index) => h(tag, Object.assign({ key: `${kind}-${index}` }, attributes))))
     }
 
     function formatDate(time) {
@@ -818,11 +916,13 @@ window.__ModuleLoader__.load({
         const assignee = issue.assignee || ''
         return h('button',
           { key: issue.key, type: 'button', className: 'jr-row', onClick: () => openIssue(issue.key), title: issue.summary },
+          h('span', { className: 'jr-type', 'data-type': typeKindOf(issue.type), title: issue.type || '', 'aria-label': issue.type || '' },
+            h(TypeIcon, { type: issue.type }),
+          ),
           h('span', { className: 'jr-key' }, issue.key),
           h('span', { className: 'jr-summary' }, issue.summary || ''),
           h('span', { className: 'jr-row-meta' },
             h('span', { className: 'jr-badge', 'data-tone': statusTone(issue.statusCategory) }, issue.status || '—'),
-            issue.type ? h('span', { className: 'jr-tag' }, issue.type) : null,
             issue.priority ? h('span', { className: 'jr-tag' }, issue.priority) : null,
             h('span', { className: 'jr-avatar', title: assignee || t('assignee.none'), 'aria-label': assignee || t('assignee.none') }, initials(assignee)),
             h('span', { className: 'jr-when' }, formatWhen(issue.updated, t)),
@@ -1001,6 +1101,14 @@ window.__ModuleLoader__.load({
           h('div', { className: 'jr-detail-head' },
             h('button', { type: 'button', className: 'jr-btn', onClick: closeDetail }, `← ${t('action.back')}`),
             detail ? h('span', { className: 'jr-badge', 'data-tone': statusTone(detail.statusCategory) }, detail.status || '—') : null,
+            detail && detail.type
+              ? h('span', { className: 'jr-detail-type' },
+                  h('span', { className: 'jr-type', 'data-type': typeKindOf(detail.type), title: detail.type },
+                    h(TypeIcon, { type: detail.type, size: 14 }),
+                  ),
+                  detail.type,
+                )
+              : null,
             detail && detail.url ? h('a', { className: 'jr-link', href: detail.url, target: '_blank', rel: 'noreferrer' }, `${t('detail.open')} ↗`) : null,
             h('button', {
               type: 'button',
