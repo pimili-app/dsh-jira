@@ -34,10 +34,10 @@ l'application, ou le CLI npm global) :
 ```sh
 # Application de bureau (profil desktop) : quitter complètement l'application
 # avant l'installation, puis la relancer.
-dsh plugin --profile desktop add github:ioteecs-team/dsh-jira
+dsh plugin --profile desktop add github:pimili-app/dsh-jira
 
 # Harness en ligne de commande (profil web)
-dsh plugin --profile web add github:ioteecs-team/dsh-jira
+dsh plugin --profile web add github:pimili-app/dsh-jira
 ```
 
 Le profil `desktop` est géré par l'application Electron : le CLI refuse

@@ -14,15 +14,15 @@
   "license": "MIT",
   "author": {
     "name": "Luc",
-    "url": "https://github.com/ioteecs-team"
+    "url": "https://github.com/pimili-app"
   },
-  "homepage": "https://github.com/ioteecs-team/dsh-jira#readme",
+  "homepage": "https://github.com/pimili-app/dsh-jira#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ioteecs-team/dsh-jira.git"
+    "url": "git+https://github.com/pimili-app/dsh-jira.git"
   },
   "bugs": {
-    "url": "https://github.com/ioteecs-team/dsh-jira/issues"
+    "url": "https://github.com/pimili-app/dsh-jira/issues"
   },
   "exports": {
     ".": "./index.js",
